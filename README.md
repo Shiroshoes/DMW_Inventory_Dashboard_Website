@@ -71,7 +71,9 @@ This project aims to improve efficiency by automating manual tasks and providing
 
 ---
 
-## 📁 Project Setup
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/DMW_Inventory_Dashboard_Website.git
+## 🔒 Password Hashing Security
+This project uses **bcrypt** encryption through PHP’s built-in `password_hash()` and `password_verify()` functions for strong password protection.  
+
+### How it works:
+```php
+$passwordHash = password_hash($password, PASSWORD_DEFAULT);
