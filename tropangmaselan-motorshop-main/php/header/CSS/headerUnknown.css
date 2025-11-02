@@ -1,0 +1,159 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #4a709a;
+}
+
+/* ================= HEADER ================= */
+.main-header {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.staff-activity-logo-icon {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ================= NAVIGATION ================= */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  transition: all 0.3s ease;
+}
+
+nav a {
+  color: #000000;
+  text-decoration: none;
+  font-weight: 500;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+nav a:hover {
+  color: #1f2f5f;
+  border-bottom: 2px solid #1f2f5f;
+}
+
+nav a.active {
+  color: #2a3b7a;
+  font-weight: 700;
+  border-bottom: 2px solid #2a3b7a;
+}
+
+/* ================= HEADER ACTIONS ================= */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logout-btn {
+  background-color: #406aaf;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.25s ease;
+}
+
+.logout-btn:hover {
+  background-color: #345b91;
+}
+
+/* ================= MENU TOGGLE ================= */
+.menu-toggle {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ================= TABLETS ================= */
+@media (max-width: 992px) {
+  nav a {
+    font-size: 0.95rem;
+  }
+
+  .staff-activity-logo-icon {
+    width: 100px;
+  }
+}
+
+/* ================= MOBILE VIEW ================= */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  nav {
+    flex-direction: column;
+    background: #fff;
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .main-header.show-menu nav {
+    max-height: 300px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  nav a {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+  }
+
+  .header-actions {
+    justify-content: flex-end;
+  }
+
+  .staff-activity-logo-icon {
+    width: 90px;
+  }
+}
+
+/* ================= SMALL MOBILE ================= */
+@media (max-width: 480px) {
+  .logout-btn {
+    padding: 6px 15px;
+    font-size: 0.85rem;
+  }
+
+  .staff-activity-logo-icon {
+    width: 80px;
+  }
+
+  .menu-toggle {
+    font-size: 1.5rem;
+  }
+}

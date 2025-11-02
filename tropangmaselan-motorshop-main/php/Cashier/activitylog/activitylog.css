@@ -1,0 +1,207 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === BODY === */
+.Log-In-Pov-body {
+  background-color: #2a508c;
+  color: #000000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Open Sans", sans-serif, Arial, Helvetica;
+  line-height: 1.5;
+}
+
+/* === MAIN CONTENT === */
+.Log-In-Pov-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 40px 30px;
+  gap: 30px;
+}
+
+/* === FORM SECTION === */
+.Log-In-Pov-form-section {
+  background-color: #ffffff;
+  color: #010101;
+  flex: 1 1 320px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.Log-In-Pov-form-section h2 {
+  color: #2a508c;
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.Log-In-Pov-new-record {
+  background: #2a508c;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.Log-In-Pov-new-record:hover {
+  background: #3467a1;
+}
+
+.Log-In-Pov-record-form input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #c9d1df;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.Log-In-Pov-form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.Log-In-Pov-enter-btn,
+.Log-In-Pov-clear-btn {
+  background: #2a508c;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.Log-In-Pov-enter-btn:hover,
+.Log-In-Pov-clear-btn:hover {
+  background: #3467a1;
+}
+
+/* === TOTAL ROW === */
+.Log-In-Pov-total-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.Log-In-Pov-total-row input {
+  width: 120px;
+  text-align: center;
+  border: 1px solid #b6c3d6;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+/* === SAVE ACTIONS === */
+.Log-In-Pov-save-actions button {
+  display: block;
+  width: 100%;
+  background: #2a508c;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.Log-In-Pov-save-actions button:hover {
+  background: #3467a1;
+}
+
+/* === TABLE SECTION === */
+.Log-In-Pov-list-section {
+  background-color: #ffffff;
+  color: #010101;
+  flex: 2 1 500px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.Log-In-Pov-list-section h2 {
+  margin-bottom: 20px;
+  text-align: right;
+  color: #2a508c;
+  font-weight: 700;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f6f8fb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  border: 1px solid #b6c3d6;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background: #2a508c;
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #edf2f8;
+}
+
+.Log-In-Pov-empty {
+  text-align: center;
+  color: #7b9ac0;
+  padding: 20px 0;
+}
+
+/* === FOOTER === */
+.Log-In-Pov-footer {
+  margin-top: auto;
+  background: #223049;
+  color: #fff;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.Log-In-Pov-footer a {
+  color: #7b9ac0;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.Log-In-Pov-footer a:hover {
+  text-decoration: underline;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 850px) {
+  .Log-In-Pov-content {
+    flex-direction: column;
+  }
+
+  .Log-In-Pov-list-section h2 {
+    text-align: left;
+  }
+
+  table, th, td {
+    font-size: 14px;
+  }
+}

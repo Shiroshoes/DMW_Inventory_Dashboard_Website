@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>admin</title>
+  <link rel="stylesheet" href="/tropangmaselan-motorshop-main/php/header/CSS/headerAdminPOV.css">
+
+  <link rel="icon" type="image/png"  href="/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" />
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo">
+      <img class="staff-activity-logo-icon" src="/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" alt="Tropang Maselan Logo">
+    </div>
+
+    <div class="menu-toggle">☰</div>
+
+    <nav aria-label="Main navigation">
+      <a href="home.html">Home</a>
+      <a href="Record.html">Record</a>
+      <a href="DashBoard.html">Dashboard</a>
+      <a href="ActivityLog.html">Activity Log</a>
+      <a href="StaffActivity.html">Staff Activity</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="logout-btn">Log Out</button>
+      <div class="profile-icon"></div>
+    </div>
+  </header>
+
+  <script>
+    const menuToggle = document.querySelector('.menu-toggle');
+    const header = document.querySelector('.main-header');
+
+    menuToggle.addEventListener('click', () => {
+      header.classList.toggle('show-menu');
+    });
+  </script>
+</body>
+</html>

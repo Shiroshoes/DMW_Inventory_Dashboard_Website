@@ -1,0 +1,40 @@
+/* === CATEGORY INPUT MATCHING RECORD INPUTS === */
+.Log-In-Pov-record-form .category-input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #c9d1df;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Open Sans", sans-serif, Arial, Helvetica;
+  background-color: #ffffff;
+  color: #010101;
+  box-sizing: border-box;
+}
+
+/* Focus effect */
+.Log-In-Pov-record-form .category-input:focus {
+  outline: none;
+  border-color: #2a508c;
+  box-shadow: 0 0 5px rgba(42, 80, 140, 0.5);
+}
+
+/* Dropdown arrow for select */
+.Log-In-Pov-record-form select.category-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><polygon points='0,0 12,0 6,6' fill='%232a508c'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+  .Log-In-Pov-record-form .category-input {
+    font-size: 13px;
+    padding: 8px;
+  }
+}

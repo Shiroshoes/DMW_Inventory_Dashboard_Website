@@ -1,0 +1,176 @@
+/* ================= BODY & TYPOGRAPHY ================= */
+body {
+    margin: 0;
+    font-family: "Open Sans", sans-serif, Arial, Helvetica;
+    background-color: #2a508c; /* main theme background */
+    color: #fff;
+    padding: 0 0; /* only vertical padding for body */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ================= HEADER (UNCHANGED) ================= */
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%; /* ensure full width */
+    padding: 12px 30px; /* header internal padding, not affected by body */
+    box-sizing: border-box;
+}
+
+/* ================= FOOTER ================= */
+footer {
+    background-color: #223049;
+    padding: 10px 30px; /* internal padding */
+    text-align: center;
+    margin-top: auto;
+    width: 100%; /* full width */
+    box-sizing: border-box;
+}
+
+
+/* ================= FILTERS ================= */
+.dashboard-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.dashboard-filters label {
+    font-weight: 500;
+    color: #fff;
+}
+
+.dashboard-filters input[type="month"] {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #7b9ac0;
+    background: #ffffff20; /* semi-transparent white */
+    color: #fff;
+    font-size: 14px;
+}
+
+button.print-btn,
+button.reset-btn {
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 8px 16px;
+    transition: 0.3s;
+}
+
+button.print-btn {
+    background: #3467a1;
+    color: #fff;
+}
+
+button.print-btn:hover {
+    background: #2a508c;
+}
+
+button.reset-btn {
+    background: #7b9ac0;
+    color: #fff;
+}
+
+button.reset-btn:hover {
+    background: #5a7a9a;
+}
+
+/* ================= KPI CARDS (LANDSCAPE) ================= */
+.dashboard-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: nowrap;
+}
+
+.kpi-card {
+    flex: 1;
+    min-width: 0;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-card h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.kpi-card p {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+}
+
+/* KPI card theme colors */
+.kpi-product { background: #f1c40f; color: #010101; }
+.kpi-service { background: #e74c3c; color: #fff; }
+.kpi-motorpart { background: #3498db; color: #fff; }
+
+/* ================= CHART CARDS (LANDSCAPE) ================= */
+.charts-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
+}
+
+.card {
+    flex: 1 1 0;
+    min-width: 0;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card h4 {
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.card canvas {
+    width: 100% !important;
+    height: 300px !important;
+    background: transparent;
+}
+
+/* ================= RESPONSIVE ================= */
+@media screen and (max-width: 1024px) {
+    .dashboard-cards,
+    .charts-section {
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .card canvas {
+        height: 200px !important;
+    }
+}
