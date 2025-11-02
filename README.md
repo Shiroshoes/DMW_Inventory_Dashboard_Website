@@ -2,6 +2,13 @@
 ### *Tropang Maselan Motorshop*  
 **Group 4 — BSDS Project**
 
+## 👥 Members
+- **Jeo-Criz Izzack E. Perdio**  
+- **Rodrigo D. Salandanan**  
+- **Rhommel M. Palermo**  
+- **Kyla F. Mercado**
+
+---
 ---
 
 ## 📖 Introduction
@@ -61,14 +68,6 @@ This project aims to improve efficiency by automating manual tasks and providing
 - **Database:** MySQL  
 - **Server Environment:** XAMPP / Apache  
 - **Security:** Session management, password hashing, and cache control headers
-
----
-
-## 👥 Group 4 Members
-- **Jeo**  
-- **Rodrigo**  
-- **Rhommel**  
-- **Kyla Mercado**
 
 ---
 
