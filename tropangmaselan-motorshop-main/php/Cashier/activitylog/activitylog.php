@@ -55,7 +55,7 @@ $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <header class="main-header">
     <div class="logo">
-      <img src="/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" alt="Logo" style="height:auto; width:100px;">
+      <img src="/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" alt="Logo" style="height:auto; width:120px;">
     </div>
     <div class="menu-toggle">☰</div>
     <nav>

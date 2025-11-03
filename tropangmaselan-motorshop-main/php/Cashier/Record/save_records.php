@@ -3,52 +3,96 @@ session_start();
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in']);
-    exit;
+  echo json_encode(['success' => false, 'message' => 'Not logged in']);
+  exit;
 }
 
-$pdo = new PDO("mysql:host=localhost;dbname=tropangmaselandb;charset=utf8mb4", 'root', '', [
+try {
+  $pdo = new PDO("mysql:host=localhost;dbname=tropangmaselandb;charset=utf8mb4", 'root', '', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-]);
+  ]);
+} catch (Exception $e) {
+  echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+  exit;
+}
 
 $input = json_decode(file_get_contents('php://input'), true);
 $user_id = $_SESSION['user_id'];
 
+if (!$input || !is_array($input)) {
+  echo json_encode(['success' => false, 'message' => 'Invalid input data']);
+  exit;
+}
+
 $saved = [];
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO daily_records (user_id, record_date, category, item_name, quantity, price, total)
-        VALUES (:user_id, :record_date, :category, :item_name, :quantity, :price, :total)");
+  $pdo->beginTransaction();
 
-    foreach ($input as $row) {
-        $record_date = $row['date'];
-        $category = $row['category'];
-        $item_name = $row['item'];
-        $quantity = (float)$row['qty'];
-        $price = (float)$row['price'];
-        $total = $quantity * $price;
+  // --- Insert to daily_records ---
+  $stmt = $pdo->prepare("INSERT INTO daily_records (user_id, record_date, category, item_name, quantity, price, total)
+                           VALUES (:user_id, :record_date, :category, :item_name, :quantity, :price, :total)");
 
-        $stmt->execute([
-            ':user_id' => $user_id,
-            ':record_date' => $record_date,
-            ':category' => $category,
-            ':item_name' => $item_name,
-            ':quantity' => $quantity,
-            ':price' => $price,
-            ':total' => $total
-        ]);
+  $logTotals = []; // To accumulate per date
 
-        $saved[] = [
-            'record_date' => $record_date,
-            'category' => $category,
-            'item_name' => $item_name,
-            'quantity' => $quantity,
-            'price' => $price,
-            'total' => $total
-        ];
+  foreach ($input as $row) {
+    $record_date = $row['record_date'];
+    $category = $row['category'];
+    $item_name = $row['item_name'];
+    $quantity = (float)$row['quantity'];
+    $price = (float)$row['price'];
+    $total = (float)$row['total'];
+
+    $stmt->execute([
+      ':user_id' => $user_id,
+      ':record_date' => $record_date,
+      ':category' => $category,
+      ':item_name' => $item_name,
+      ':quantity' => $quantity,
+      ':price' => $price,
+      ':total' => $total
+    ]);
+
+    $saved[] = [
+      'record_date' => $record_date,
+      'category' => $category,
+      'item_name' => $item_name,
+      'quantity' => $quantity,
+      'price' => $price,
+      'total' => $total
+    ];
+
+    // --- Collect totals per date ---
+    if (!isset($logTotals[$record_date])) {
+      $logTotals[$record_date] = ['entries' => 0, 'amount' => 0];
     }
+    $logTotals[$record_date]['entries'] += 1;
+    $logTotals[$record_date]['amount'] += $total;
+  }
 
-    echo json_encode(['success' => true, 'saved' => $saved]);
+  // --- Insert or update activity_log ---
+  $logStmtInsert = $pdo->prepare("
+        INSERT INTO activity_log (user_id, record_date, total_entries, total_amount)
+        VALUES (:user_id, :record_date, :total_entries, :total_amount)
+        ON DUPLICATE KEY UPDATE 
+            total_entries = total_entries + VALUES(total_entries),
+            total_amount = total_amount + VALUES(total_amount),
+            updated_at = CURRENT_TIMESTAMP()
+    ");
+
+  foreach ($logTotals as $date => $totals) {
+    $logStmtInsert->execute([
+      ':user_id' => $user_id,
+      ':record_date' => $date,
+      ':total_entries' => $totals['entries'],
+      ':total_amount' => $totals['amount']
+    ]);
+  }
+
+  $pdo->commit();
+
+  echo json_encode(['success' => true, 'saved' => $saved]);
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+  $pdo->rollBack();
+  echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }

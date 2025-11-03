@@ -5,38 +5,51 @@ if (!isset($_SESSION['user_id'])) {
   exit;
 }
 
-$pdo = new PDO(
-  "mysql:host=localhost;dbname=tropangmaselandb;charset=utf8mb4",
-  'root',
-  '',
-  [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-);
+try {
+  $pdo = new PDO(
+    "mysql:host=localhost;dbname=tropangmaselandb;charset=utf8mb4",
+    'root',
+    '',
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+  );
+} catch (PDOException $e) {
+  die("Database connection failed");
+}
 
-// Determine whose records to edit
+// ======== BASIC VARIABLES ========
 $record_date = $_GET['date'] ?? null;
 if (!$record_date) die("Invalid date");
 
-// Admin can pass user_id via GET
-if ($_SESSION['role'] === 'Admin') {
-  $user_id = $_GET['user_id'] ?? null;
-  if (!$user_id) {
-    // Fetch list of cashiers
+$role = $_SESSION['role'] ?? 'Cashier';
+$session_user_id = $_SESSION['user_id'];
+
+// ======== DETERMINE TARGET USER ========
+// Admin can choose a cashier or view their own records
+if ($role === 'Admin') {
+  $target_user_id = $_GET['user_id'] ?? $session_user_id;
+
+  // If Admin hasn’t chosen a cashier, show a selection list
+  if (!isset($_GET['user_id'])) {
     $stmt = $pdo->query("SELECT user_id, fullname FROM users WHERE role='Cashier'");
     $cashiers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo "<h3>Select a cashier to view records:</h3>";
-    echo "<ul>";
+    echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Select Cashier</title><link rel='icon' type='image/png' href='/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png'></head><body style='font-family:sans-serif; padding:20px; background: #6991d1ff;'>";
+    echo "<h2 style='color: white;'>Select a Cashier to view records for <span style='color:#fff;'>$record_date</span></h2><ul>";
     foreach ($cashiers as $c) {
-      echo "<li><a href='?date={$record_date}&user_id={$c['user_id']}'>" . $c['fullname'] . "</a></li>";
+      echo "<li><a href='?date={$record_date}&user_id={$c['user_id']}' style='color:#fff; text-decoration:none; font-weight:bold;'>" . htmlspecialchars($c['fullname']) . "</a></li>";
     }
-    echo "</ul>";
+    echo "</ul><hr>";
+    echo "<p><a href='?date={$record_date}&user_id={$session_user_id}' style='color:#fff; text-decoration:none; font-weight:bold;'>View My Own Records</a></p>";
+    echo "</body></html>";
     exit;
   }
+} else {
+  // Cashiers can only access their own records
+  $target_user_id = $session_user_id;
 }
 
-
-// Fetch all records for that day
+// ======== FETCH RECORDS ========
 $stmt = $pdo->prepare("SELECT * FROM daily_records WHERE user_id=? AND record_date=?");
-$stmt->execute([$user_id, $record_date]);
+$stmt->execute([$target_user_id, $record_date]);
 $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -60,11 +73,18 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <div class="menu-toggle">☰</div>
     <nav>
-      <a href="/website/tropangmaselan-motorshop-main/php/Cashier/Home/html/home.php">Home</a>
-      <a href="/website/tropangmaselan-motorshop-main/php/Cashier/Record/record.php">Record</a>
-      <a href="/website/tropangmaselan-motorshop-main/php/Cashier/dashboard/dashboard.php">Dashboard</a>
-      <a href="/website/tropangmaselan-motorshop-main/php/Cashier/activitylog/activitylog.php">Activity Log</a>
-      <a href="/website/tropangmaselan-motorshop-main/php/Admin/addaccount/staffactivity.php">Account List</a>
+      <?php if ($role === 'Admin'): ?>
+        <a href="/website/tropangmaselan-motorshop-main/php/Admin/Home/html/home.php">Home</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Admin/Record/record.php">Record</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Admin/dashboard/dashboard.php">Dashboard</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Admin/activitylog/activitylog.php">Activity Log</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Admin/addaccount/staffactivity.php">Account List</a>
+      <?php else: ?>
+        <a href="/website/tropangmaselan-motorshop-main/php/Cashier/Home/html/home.php">Home</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Cashier/Record/record.php">Record</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Cashier/dashboard/dashboard.php">Dashboard</a>
+        <a href="/website/tropangmaselan-motorshop-main/php/Cashier/activitylog/activitylog.php">Activity Log</a>
+      <?php endif; ?>
     </nav>
     <div class="header-actions">
       <span>Hello, <?= htmlspecialchars($_SESSION['fullname']) ?></span>
@@ -124,13 +144,14 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <script>
     const back = () => {
-      <?php if ($_SESSION['role'] === 'Admin'): ?>
+      <?php if ($role === 'Admin'): ?>
         window.location.href = '/website/tropangmaselan-motorshop-main/php/Admin/activitylog/activitylog.php';
       <?php else: ?>
         window.location.href = '/website/tropangmaselan-motorshop-main/php/Cashier/activitylog/activitylog.php';
       <?php endif; ?>
     };
 
+    // --- Total calculation + delete handling ---
     document.querySelectorAll('tr[data-id]').forEach(row => {
       const qty = row.children[2].querySelector('input');
       const price = row.children[3].querySelector('input');
@@ -147,20 +168,23 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
       row.querySelector('.delete-btn').addEventListener('click', () => {
         if (!confirm("Delete this record?")) return;
         fetch('delete_daily_record.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            record_id: row.dataset.id
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              record_id: row.dataset.id
+            })
           })
-        }).then(res => res.json()).then(data => {
-          if (data.success) row.remove();
-          else alert("Delete failed");
-        });
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) row.remove();
+            else alert("Delete failed");
+          });
       });
     });
 
+    // --- Save all changes ---
     document.getElementById('saveAllBtn').addEventListener('click', () => {
       const rows = document.querySelectorAll('tr[data-id]');
       if (rows.length === 0) return alert("No records to save");
@@ -171,30 +195,33 @@ $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
         item_name: row.children[0].querySelector('input').value,
         category: row.children[1].querySelector('select').value,
         quantity: row.children[2].querySelector('input').value,
-        price: row.children[3].querySelector('input').value
+        price: row.children[3].querySelector('input').value,
+        user_id: '<?= $target_user_id ?>'
       }));
 
       fetch('update_daily_record.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          records: payload
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            records: payload
+          })
         })
-      }).then(res => res.json()).then(data => {
-        if (data.success) {
-          alert("All records updated successfully");
-          rows.forEach(row => {
-            const total = parseFloat(row.children[2].querySelector('input').value) *
-              parseFloat(row.children[3].querySelector('input').value);
-            row.children[4].innerText = `₱${total.toFixed(2)}`;
-          });
-          window.location.href = '/website/tropangmaselan-motorshop-main/php/Admin/activitylog/activitylog.php';
-        } else {
-          alert(data.message || "Update failed");
-        }
-      });
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert("All records updated successfully");
+            rows.forEach(row => {
+              const total = parseFloat(row.children[2].querySelector('input').value) *
+                parseFloat(row.children[3].querySelector('input').value);
+              row.children[4].innerText = `₱${total.toFixed(2)}`;
+            });
+            window.location.href = '/website/tropangmaselan-motorshop-main/php/Admin/activitylog/activitylog.php';
+          } else {
+            alert(data.message || "Update failed");
+          }
+        });
     });
   </script>
 </body>

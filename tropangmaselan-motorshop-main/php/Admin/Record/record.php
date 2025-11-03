@@ -20,14 +20,11 @@ header("Expires: 0");
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Record</title>
+
   <link rel="stylesheet" href="/website/tropangmaselan-motorshop-main/php/header/CSS/headerCashierPOV.css">
-
   <link rel="stylesheet" href="/website/tropangmaselan-motorshop-main/php/Admin/Record/record.css" />
-
-  <link rel="icon" type="image/png" href="/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" />
-
   <link rel="stylesheet" href="/website/tropangmaselan-motorshop-main/php/Admin/Record/record-category.css">
-
+  <link rel="icon" type="image/png" href="/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" />
 </head>
 
 <body class="Log-In-Pov-body">
@@ -73,13 +70,12 @@ header("Expires: 0");
       <h2>Daily Record</h2>
       <form class="Log-In-Pov-record-form">
         <!-- Category dropdown -->
-        <select class="category-input" required>
+        <select id="categoryInput" class="category-input" required>
           <option value="">Select category</option>
           <option value="Product">Product</option>
           <option value="Service">Service</option>
           <option value="Motorpart">Motor Part</option>
         </select>
-
 
         <input type="text" id="itemInput" placeholder="Item Name" required />
         <input type="number" id="qtyInput" placeholder="Quantity" required />
@@ -150,13 +146,15 @@ header("Expires: 0");
     qtyInput.addEventListener('input', updateTotal);
     priceInput.addEventListener('input', updateTotal);
 
-    // Enter / Add row
+    // Enter / Add or Update row
     document.querySelector('.Log-In-Pov-enter-btn').addEventListener('click', () => {
-      if (!categoryInput.value || !itemInput.value || !qtyInput.value || !priceInput.value || !dateInput.value)
-        return alert("Fill all fields");
+      if (!categoryInput.value || !itemInput.value || !qtyInput.value || !priceInput.value || !dateInput.value) {
+        alert("Please fill in all fields before adding.");
+        return;
+      }
 
       if (selectedRow) {
-        // Update row
+        // --- Update existing row ---
         selectedRow.cells[0].innerText = dateInput.value;
         selectedRow.cells[1].innerText = categoryInput.value;
         selectedRow.cells[2].innerText = itemInput.value;
@@ -165,7 +163,7 @@ header("Expires: 0");
         selectedRow.cells[5].innerText = totalInput.value;
         selectedRow = null;
       } else {
-        // Add new row
+        // --- Add new row ---
         if (table.querySelector('.Log-In-Pov-empty')) table.innerHTML = '';
         const row = table.insertRow();
         row.insertCell(0).innerText = dateInput.value;
@@ -186,7 +184,7 @@ header("Expires: 0");
         });
       }
 
-      // Clear form
+      // --- Clear only after adding ---
       itemInput.value = '';
       qtyInput.value = '';
       priceInput.value = '';
@@ -195,7 +193,42 @@ header("Expires: 0");
       totalInput.value = '';
     });
 
-    // Clear
+    // Edit (Update) selected row directly
+    document.querySelector('.Log-In-Pov-edit-btn').addEventListener('click', () => {
+      if (!selectedRow) {
+        alert("Please select a row to edit first.");
+        return;
+      }
+
+      // Check if inputs are filled
+      if (!categoryInput.value || !itemInput.value || !qtyInput.value || !priceInput.value || !dateInput.value) {
+        alert("Please fill in all fields before updating.");
+        return;
+      }
+
+      // Update the selected row with input values
+      selectedRow.cells[0].innerText = dateInput.value;
+      selectedRow.cells[1].innerText = categoryInput.value;
+      selectedRow.cells[2].innerText = itemInput.value;
+      selectedRow.cells[3].innerText = qtyInput.value;
+      selectedRow.cells[4].innerText = parseFloat(priceInput.value).toFixed(2);
+      selectedRow.cells[5].innerText = (parseFloat(qtyInput.value) * parseFloat(priceInput.value)).toFixed(2);
+
+      alert("Row updated successfully!");
+
+      // Clear inputs after editing
+      itemInput.value = '';
+      qtyInput.value = '';
+      priceInput.value = '';
+      dateInput.value = '';
+      categoryInput.value = '';
+      totalInput.value = '';
+      selectedRow = null;
+    });
+
+
+
+    // Clear inputs manually
     document.querySelector('.Log-In-Pov-clear-btn').addEventListener('click', () => {
       itemInput.value = '';
       qtyInput.value = '';
@@ -206,25 +239,30 @@ header("Expires: 0");
       selectedRow = null;
     });
 
-    // Delete
+    // Delete selected row
     document.querySelector('.Log-In-Pov-delete-btn').addEventListener('click', () => {
-      if (!selectedRow) return alert("Select a row first");
+      if (!selectedRow) {
+        alert("Please select a row to delete.");
+        return;
+      }
       selectedRow.remove();
-      if (!table.rows.length) table.innerHTML = '<tr><td colspan="6" class="Log-In-Pov-empty">No records yet</td></tr>';
+      if (!table.rows.length)
+        table.innerHTML = '<tr><td colspan="6" class="Log-In-Pov-empty">No records yet</td></tr>';
       selectedRow = null;
     });
 
     // Save via AJAX
     document.querySelector('.Log-In-Pov-save-btn').addEventListener('click', () => {
       const rows = Array.from(table.rows).filter(r => !r.querySelector('.Log-In-Pov-empty'));
-      if (!rows.length) return alert("No rows to save");
+      if (!rows.length) return alert("No rows to save.");
 
       const data = rows.map(r => ({
         record_date: r.cells[0].innerText,
         category: r.cells[1].innerText,
         item_name: r.cells[2].innerText,
         quantity: r.cells[3].innerText,
-        price: r.cells[4].innerText
+        price: r.cells[4].innerText,
+        total: r.cells[5].innerText
       }));
 
       fetch('/website/tropangmaselan-motorshop-main/php/Admin/Record/save_records.php', {
@@ -235,8 +273,7 @@ header("Expires: 0");
         body: JSON.stringify(data)
       }).then(res => res.json()).then(resp => {
         if (resp.success) {
-          alert("Records saved!");
-          table.innerHTML = '';
+          alert("Records saved successfully!");
           resp.saved.forEach(r => {
             const row = table.insertRow();
             row.insertCell(0).innerText = r.record_date;
@@ -255,11 +292,20 @@ header("Expires: 0");
               priceInput.value = row.cells[4].innerText;
               totalInput.value = row.cells[5].innerText;
             });
+            table.innerHTML = '<tr><td colspan="6" class="Log-In-Pov-empty">No records yet</td></tr>';
+
+            dateInput.value = '';
+            categoryInput.value = '';
+            itemInput.value = '';
+            qtyInput.value = '';
+            priceInput.value = '';
+            totalInput.value = '';
+            selectedRow = null;
           });
         } else {
-          alert("Error saving records");
+          alert("Error saving records.");
         }
-      });
+      }).catch(() => alert("Connection error — please try again."));
     });
   </script>
 </body>

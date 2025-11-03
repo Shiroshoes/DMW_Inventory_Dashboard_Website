@@ -174,7 +174,7 @@ $top5_colors = array_map(fn($p) => $cat_colors[$p['category']] ?? '#2a508c', $to
 
   <header class="main-header">
     <div class="logo">
-      <img src="/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" alt="Logo" style="height:auto; width:100px;">
+      <img src="/website/tropangmaselan-motorshop-main/Assets/tropangmaselanLogo.png" alt="Logo" style="height:auto; width:120px;">
     </div>
     <nav>
       <a href="/website/tropangmaselan-motorshop-main/php/Cashier/Home/html/home.php">Home</a>
